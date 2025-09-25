@@ -22,10 +22,17 @@ export type Task = {
   }
 }
 
+export type GenerateTaskPayload = {
+  text: string
+}
+
+export type GenerateTaskResponse = Task
+
 export type SuggestPriorityPayload = {
   title: string
   description: string
 }
+
 
 export type SuggestPriorityResponse = {
   priority: TaskPriority
@@ -69,6 +76,18 @@ export class TaskService {
     try {
       const { data } = await api.post<SuggestPriorityResponse>(
         '/tasks/suggest-priority',
+        payload
+      )
+      return { ok: true, data } as const
+    } catch (error) {
+      return { ok: false, error: error as AxiosError } as const
+    }
+  }
+
+  async generateTask(payload: GenerateTaskPayload) {
+    try {
+      const { data } = await api.post<GenerateTaskResponse>(
+        '/tasks/generate',
         payload
       )
       return { ok: true, data } as const
