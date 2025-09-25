@@ -20,6 +20,8 @@ function Home() {
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; text: string }>()
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
+  const [generating, setGenerating] = useState(false)
+  const [aiReason, setAiReason] = useState<string>()
 
   useEffect(() => {
     let cancelled = false
@@ -75,6 +77,7 @@ function Home() {
         setDescription('')
         setPriority('HIGH')
         setStatus('PENDING')
+        setAiReason(undefined)
         setFeedback({ type: 'success', text: 'Task criada com sucesso.' })
       } else {
         const responseData = result.error.response?.data as unknown as { message?: string } | undefined
@@ -84,6 +87,29 @@ function Home() {
       setFeedback({ type: 'error', text: 'Erro inesperado ao criar a task.' })
     } finally {
       setSubmitting(false)
+    }
+  }
+
+  async function handleSuggestPriority() {
+    setGenerating(true)
+    setAiReason(undefined)
+    setFeedback(undefined)
+    try {
+      const payload = { title: title.trim(), description: description.trim() }
+      if (!payload.title || !payload.description) {
+        setFeedback({ type: 'error', text: 'Preencha título e descrição para gerar prioridade.' })
+        return
+      }
+      const result = await taskService.suggestPriority(payload)
+      if (result.ok) {
+        setPriority(result.data.priority)
+        setAiReason(result.data.reason)
+      } else {
+        const responseData = result.error.response?.data as unknown as { message?: string } | undefined
+        setFeedback({ type: 'error', text: responseData?.message || 'Falha ao sugerir prioridade.' })
+      }
+    } finally {
+      setGenerating(false)
     }
   }
 
@@ -150,6 +176,23 @@ function Home() {
               placeholder="Descreva a task"
             />
           </div>
+          <div className="sm:col-span-2 flex items-center justify-between rounded-md border p-3">
+            <div>
+              <p className="text-sm font-medium">Gerar prioridade da tarefa com IA</p>
+              <p className="text-xs text-muted-foreground">Preencha título e descrição para habilitar.</p>
+            </div>
+            <button
+              type="button"
+              onClick={handleSuggestPriority}
+              disabled={generating || !title.trim() || !description.trim()}
+              className="inline-flex items-center rounded-md border px-3 py-2 text-sm hover:bg-accent disabled:opacity-50"
+            >
+              {generating ? 'Gerando...' : 'Gerar prioridade'}
+            </button>
+          </div>
+          {aiReason && (
+            <div className="sm:col-span-2 text-xs text-muted-foreground">{aiReason}</div>
+          )}
           <div>
             <label htmlFor="priority" className="block text-sm font-medium mb-1">Prioridade</label>
             <select

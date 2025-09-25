@@ -22,6 +22,16 @@ export type Task = {
   }
 }
 
+export type SuggestPriorityPayload = {
+  title: string
+  description: string
+}
+
+export type SuggestPriorityResponse = {
+  priority: TaskPriority
+  reason?: string
+}
+
 export class TaskService {
   async createTask(payload: CreateTaskPayload) {
     try {
@@ -50,6 +60,18 @@ export class TaskService {
     try {
       await api.delete(`/tasks/${id}`)
       return { ok: true } as const
+    } catch (error) {
+      return { ok: false, error: error as AxiosError } as const
+    }
+  }
+
+  async suggestPriority(payload: SuggestPriorityPayload) {
+    try {
+      const { data } = await api.post<SuggestPriorityResponse>(
+        '/tasks/suggest-priority',
+        payload
+      )
+      return { ok: true, data } as const
     } catch (error) {
       return { ok: false, error: error as AxiosError } as const
     }
