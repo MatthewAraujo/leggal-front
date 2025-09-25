@@ -28,11 +28,11 @@ export type GenerateTaskPayload = {
 
 export type GenerateTaskResponse = Task
 
+
 export type SuggestPriorityPayload = {
   title: string
   description: string
 }
-
 
 export type SuggestPriorityResponse = {
   priority: TaskPriority
@@ -79,6 +79,27 @@ export class TaskService {
         payload
       )
       return { ok: true, data } as const
+    } catch (error) {
+      return { ok: false, error: error as AxiosError } as const
+    }
+  }
+
+  async updateTask(
+    id: string,
+    payload: Partial<{
+      title: string
+      description: string
+      priority: TaskPriority
+      status: TaskStatus
+    }>
+  ) {
+    try {
+      const { data } = await api.patch<Task>(
+        `/tasks/${id}`,
+        payload
+      )
+      const updated: any = (data as any)?.task ?? data
+      return { ok: true, data: updated } as const
     } catch (error) {
       return { ok: false, error: error as AxiosError } as const
     }

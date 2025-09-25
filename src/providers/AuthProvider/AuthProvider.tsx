@@ -51,9 +51,27 @@ function AuthProvider(props: Props) {
   useEffect(() => {
     const token = getToken()
 
+    async function getUserData() {
+      setLoadingUserData(true)
+
+      try {
+        const response = await authService.me()
+        if (response.ok && response.data) {
+          const { email, permissions, roles } = response.data
+          setUser({ email, permissions, roles })
+        }
+      } catch (error) {
+        /**
+         * an error handler can be added here
+         */
+      } finally {
+        setLoadingUserData(false)
+      }
+    }
 
     if (token) {
       setAuthorizationHeader({ request: api.defaults, token })
+      getUserData()
     }
   }, [])
 

@@ -1,8 +1,10 @@
 import { Routes, Route } from 'react-router-dom'
 import { useRoutePaths } from '@/hooks'
 import { Home, Login, Register, } from '@/pages'
-import { PrivateRoute } from '../PrivateRoute'
+import { PrivateRoute, } from '../PrivateRoute'
 import { PublicRoute } from '../PublicRoute'
+import { Users } from 'lucide-react'
+import path from 'path'
 
 function Router() {
   const {
@@ -41,7 +43,6 @@ function Router() {
 
       <Route path={REGISTER_PATH} element={<Register />} />
       <Route path="/signup" element={<Register />} />
-
 
       <Route path="*" element={<h1>404</h1>} />
     </Routes>

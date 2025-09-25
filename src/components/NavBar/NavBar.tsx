@@ -1,9 +1,10 @@
 import { useRoutePaths, useSession } from '@/hooks'
 import { Link } from 'react-router-dom'
+import { CanAccess } from '../CanAccess'
 
 function NavBar() {
   const { isAuthenticated, user, signOut } = useSession()
-  const { LOGIN_PATH, REGISTER_PATH, ROOT_PATH } =
+  const { LOGIN_PATH, METRICS_PATH, REGISTER_PATH, ROOT_PATH, USERS_PATH } =
     useRoutePaths()
 
   return (
@@ -16,6 +17,12 @@ function NavBar() {
 
         <nav className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">
           <Link to={ROOT_PATH} className="hover:text-foreground">Home</Link>
+          <CanAccess permissions={['users.list']}>
+            <Link to={USERS_PATH} className="hover:text-foreground">Users</Link>
+          </CanAccess>
+          <CanAccess permissions={['metrics.list']}>
+            <Link to={METRICS_PATH} className="hover:text-foreground">Metrics</Link>
+          </CanAccess>
         </nav>
 
         <div className="flex items-center gap-3">
