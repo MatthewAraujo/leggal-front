@@ -22,8 +22,21 @@ export type AuthResponse = {
 export class AuthService {
   async signIn(payload: SignInPayload) {
     try {
-      const { data } = await api.post<AuthResponse>('/sessions', payload)
-      return { ok: true, data } as const
+      const { data } = await api.post('/sessions', payload)
+      const token = (data as any)?.token ?? (data as any)?.access_token
+      const refreshToken =
+        (data as any)?.refreshToken ?? (data as any)?.refresh_token
+      const permissions = (data as any)?.permissions ?? []
+      const roles = (data as any)?.roles ?? []
+
+      const normalized: AuthResponse = {
+        token,
+        refreshToken,
+        permissions,
+        roles
+      }
+
+      return { ok: true, data: normalized } as const
     } catch (error) {
       return { ok: false, error: error as AxiosError } as const
     }
@@ -31,7 +44,7 @@ export class AuthService {
 
   async signUp(payload: SignUpPayload) {
     try {
-      const { data } = await api.post('/users', payload)
+      const { data } = await api.post('/accounts', payload)
       return { ok: true, data } as const
     } catch (error) {
       return { ok: false, error: error as AxiosError } as const
@@ -49,5 +62,3 @@ export class AuthService {
 }
 
 export const authService = new AuthService()
-
-

@@ -1,6 +1,8 @@
 import React, { FormEvent, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { authService } from '@/services'
+import { useSession } from '@/hooks'
+import type { AxiosError } from 'axios'
 
 function Register() {
   const [values, setValues] = useState({ name: '', email: '', password: '' })
@@ -8,6 +10,12 @@ function Register() {
     'idle' | 'loading' | 'success' | 'error'
   >('idle')
   const [message, setMessage] = useState<string>()
+  const navigate = useNavigate()
+  const { signIn } = useSession()
+
+  function isAxiosErr(val: unknown): val is AxiosError {
+    return typeof val === 'object' && val !== null && 'isAxiosError' in val
+  }
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target
@@ -21,12 +29,26 @@ function Register() {
       const result = await authService.signUp(values)
       if (!result.ok) {
         setStatus('error')
-        setMessage('Não foi possível concluir o cadastro.')
+        const responseData = result.error.response?.data as unknown as
+          | {
+            message?: string
+          }
+          | undefined
+        const backendMsg = responseData?.message
+        setMessage(backendMsg || 'Não foi possível concluir o cadastro.')
       } else {
         setStatus('success')
         setMessage(
           'Cadastro realizado com sucesso! Agora você pode fazer login.'
         )
+
+        const loginResult = await signIn({
+          email: values.email,
+          password: values.password
+        })
+        if (!isAxiosErr(loginResult)) {
+          navigate('/home')
+        }
       }
     } catch (e) {
       setStatus('error')
@@ -41,16 +63,14 @@ function Register() {
           <h1 className="text-2xl font-semibold tracking-tight">Criar conta</h1>
           <p className="text-muted-foreground mt-1">Cadastre-se para começar</p>
 
-          {message && (
-            <div
-              className={`mt-4 text-sm rounded-md border px-3 py-2 ${status === 'error'
-                  ? 'border-destructive/40 text-destructive bg-destructive/5'
-                  : 'border-green-500/40 text-green-700 bg-green-500/5'
-                }`}
-            >
-              {message}
-            </div>
-          )}
+          {message &&
+            (() => {
+              const alertClassName = `mt-4 text-sm rounded-md border px-3 py-2 ${status === 'error'
+                ? 'border-destructive/40 text-destructive bg-destructive/5'
+                : 'border-green-500/40 text-green-700 bg-green-500/5'
+                }`
+              return <div className={alertClassName}>{message}</div>
+            })()}
 
           <form noValidate onSubmit={handleSubmit} className="mt-6 space-y-4">
             <div>

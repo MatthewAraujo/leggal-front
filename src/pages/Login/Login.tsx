@@ -1,5 +1,6 @@
 import React, { FormEvent, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { AxiosError } from 'axios'
 import { useSession } from '@/hooks'
 
 function initialFormValues() {
@@ -9,11 +10,21 @@ function initialFormValues() {
   }
 }
 
+type FeedbackMessage = {
+  type: 'error' | 'success'
+  text: string
+}
+
+function isAxiosErr(val: unknown): val is AxiosError {
+  return typeof val === 'object' && val !== null && 'isAxiosError' in val
+}
+
 function Login() {
   const [values, setValues] = useState(initialFormValues)
   const [loginRequestStatus, setLoginRequestStatus] = useState('success')
-  const [message, setMessage] = useState<{ type: 'error' | 'success'; text: string }>()
+  const [message, setMessage] = useState<FeedbackMessage>()
   const { signIn } = useSession()
+  const navigate = useNavigate()
 
   const users = [
     { name: 'Admin', email: 'admin@site.com', password: 'password@123' },
@@ -41,15 +52,22 @@ function Login() {
 
     try {
       const result = await signIn(values)
-      if ((result as any)?.isAxiosError) {
-        setMessage({ type: 'error', text: 'Credenciais inválidas.' })
+      if (isAxiosErr(result)) {
+        const responseData = result.response?.data as unknown as
+          | {
+            message?: string
+          }
+          | undefined
+        const backendMsg = responseData?.message
+        setMessage({
+          type: 'error',
+          text: backendMsg || 'Credenciais inválidas.'
+        })
       } else {
         setMessage({ type: 'success', text: 'Login realizado com sucesso!' })
+        navigate('/home')
       }
     } catch (error) {
-      /**
-       * an error handler can be added here
-       */
     } finally {
       setLoginRequestStatus('success')
     }
@@ -65,18 +83,18 @@ function Login() {
       <div className="w-full max-w-md">
         <div className="bg-card shadow-sm border rounded-lg p-6">
           <h1 className="text-2xl font-semibold tracking-tight">Entrar</h1>
-          <p className="text-muted-foreground mt-1">Acesse sua conta para continuar</p>
+          <p className="text-muted-foreground mt-1">
+            Acesse sua conta para continuar
+          </p>
 
-          {message && (
-            <div
-              className={`mt-4 text-sm rounded-md border px-3 py-2 ${message.type === 'error'
-                  ? 'border-destructive/40 text-destructive bg-destructive/5'
-                  : 'border-green-500/40 text-green-700 bg-green-500/5'
-                }`}
-            >
-              {message.text}
-            </div>
-          )}
+          {message &&
+            (() => {
+              const alertClassName = `mt-4 text-sm rounded-md border px-3 py-2 ${message.type === 'error'
+                ? 'border-destructive/40 text-destructive bg-destructive/5'
+                : 'border-green-500/40 text-green-700 bg-green-500/5'
+                }`
+              return <div className={alertClassName}>{message.text}</div>
+            })()}
 
           <form noValidate onSubmit={handleSubmit} className="mt-6 space-y-4">
             <div>
@@ -97,7 +115,10 @@ function Login() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium mb-1">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium mb-1"
+              >
                 Senha
               </label>
               <input
@@ -124,13 +145,18 @@ function Login() {
 
           <div className="mt-4 text-center text-sm text-muted-foreground">
             Não tem uma conta?{' '}
-            <Link to="/signup" className="text-primary underline-offset-4 hover:underline">
+            <Link
+              to="/signup"
+              className="text-primary underline-offset-4 hover:underline"
+            >
               Cadastre-se
             </Link>
           </div>
 
           <div className="mt-6">
-            <label className="block text-xs text-muted-foreground mb-1">Usuários de teste</label>
+            <label className="block text-xs text-muted-foreground mb-1">
+              Usuários de teste
+            </label>
             <select
               name="select-user"
               onChange={handleUserChange}
