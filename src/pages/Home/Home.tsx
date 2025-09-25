@@ -93,8 +93,16 @@ function Home() {
     )
   }
 
-  function deleteTask(id: string) {
+  async function deleteTask(id: string) {
+    const current = tasks
     setTasks((prev) => prev.filter((t) => t.id !== id))
+    const result = await taskService.deleteTask(id)
+    if (!result.ok) {
+      // rollback on failure
+      setTasks(current)
+      const responseData = result.error.response?.data as unknown as { message?: string } | undefined
+      setFeedback({ type: 'error', text: responseData?.message || 'Falha ao excluir a task.' })
+    }
   }
 
   const stats = useMemo(() => {

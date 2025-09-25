@@ -45,6 +45,15 @@ export class TaskService {
       return { ok: false, error: error as AxiosError } as const
     }
   }
+
+  async deleteTask(id: string) {
+    try {
+      await api.delete(`/tasks/${id}`)
+      return { ok: true } as const
+    } catch (error) {
+      return { ok: false, error: error as AxiosError } as const
+    }
+  }
 }
 
 export const taskService = new TaskService()
