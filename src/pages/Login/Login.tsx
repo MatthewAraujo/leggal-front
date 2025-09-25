@@ -152,26 +152,6 @@ function Login() {
               Cadastre-se
             </Link>
           </div>
-
-          <div className="mt-6">
-            <label className="block text-xs text-muted-foreground mb-1">
-              Usuários de teste
-            </label>
-            <select
-              name="select-user"
-              onChange={handleUserChange}
-              className="w-full rounded-md border bg-background px-3 py-2 text-sm shadow-sm"
-            >
-              <option value="" style={{ display: 'none' }}>
-                Selecione um usuário
-              </option>
-              {users.map((user) => (
-                <option key={user.email} value={JSON.stringify(user)}>
-                  {user.name}
-                </option>
-              ))}
-            </select>
-          </div>
         </div>
       </div>
     </div>
