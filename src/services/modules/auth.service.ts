@@ -50,15 +50,6 @@ export class AuthService {
       return { ok: false, error: error as AxiosError } as const
     }
   }
-
-  async me() {
-    try {
-      const { data } = await api.get('/me')
-      return { ok: true, data } as const
-    } catch (error) {
-      return { ok: false, error: error as AxiosError } as const
-    }
-  }
 }
 
 export const authService = new AuthService()
