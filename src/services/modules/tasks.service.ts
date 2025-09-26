@@ -116,6 +116,17 @@ export class TaskService {
       return { ok: false, error: error as AxiosError } as const
     }
   }
+
+  async semanticSearch(description: string) {
+    try {
+      const { data } = await api.post<
+        { tasks: Array<Task> }
+      >('/tasks/semantic-search', { description })
+      return { ok: true, data } as const
+    } catch (error) {
+      return { ok: false, error: error as AxiosError } as const
+    }
+  }
 }
 
 export const taskService = new TaskService()
