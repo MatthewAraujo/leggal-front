@@ -30,7 +30,7 @@ export function TaskForm({
     setValue,
     formState: { errors }
   } = useForm<CreateTaskInput>({
-    resolver: zodResolver(CreateTaskSchema),
+    resolver: zodResolver(CreateTaskSchema) as any,
     defaultValues: {
       title: '',
       description: '',
@@ -55,7 +55,7 @@ export function TaskForm({
     if (watchedTitle && watchedDescription) {
       const result = await onSuggestPriority(watchedTitle, watchedDescription)
       if (result.success && result.priority) {
-        setValue('priority', result.priority)
+        setValue('priority', result.priority as TaskPriorityType)
       }
     }
   }

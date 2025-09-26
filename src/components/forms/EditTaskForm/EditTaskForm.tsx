@@ -24,10 +24,10 @@ export function EditTaskForm({ task, onSubmit, onCancel, submitting }: EditTaskF
     formState: { errors },
     reset
   } = useForm<UpdateTaskInput>({
-    resolver: zodResolver(UpdateTaskSchema),
+    resolver: zodResolver(UpdateTaskSchema) as any,
     defaultValues: {
       title: task.title,
-      description: task.description,
+      description: task.description ?? '',
       priority: task.priority,
       status: task.status
     }
