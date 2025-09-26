@@ -10,6 +10,7 @@ import { TaskForm, EditTaskForm, TaskSearch, Feedback } from '@/components'
 import { useTasks, useTaskSearch, useTaskAI } from '@/hooks'
 import { calculateTaskStats } from '@/utils'
 import { CreateTaskInput, UpdateTaskInput } from '@/schemas/task.schema'
+import { PencilIcon, TrashIcon } from 'lucide-react'
 
 function Home() {
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -31,7 +32,8 @@ function Home() {
     addTask,
     updateTask,
     deleteTask,
-    loadMore
+    loadMore,
+    appendTaskToList
   } = useTasks()
 
   const {
@@ -65,7 +67,7 @@ function Home() {
   const handleGenerateTask = async (description: string) => {
     const result = await generateTask(description)
     if (result.success && result.task) {
-      // A task será adicionada automaticamente pelo hook useTasks
+      appendTaskToList(result.task)
     }
   }
 
@@ -120,7 +122,7 @@ function Home() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-6">
       <div className="bg-card border rounded-lg p-4 md:p-6 shadow-sm">
-        <h1 className="text-xl md:text-2xl font-semibold tracking-tight">Suas Tasks</h1>
+        <h1 className="text-xl md:text-2xl font-semibold tracking-tight">Suas Tarefas</h1>
         <p className="text-sm text-muted-foreground mt-1">Crie e gerencie suas tarefas.</p>
 
         {currentFeedback && (
@@ -178,7 +180,7 @@ function Home() {
                   e.stopPropagation()
                   handleToggleComplete(task)
                 }}
-                className={`inline-flex items-center rounded-md px-3 py-1.5 text-xs font-medium border hover:bg-accent ${task.completed ? 'opacity-70' : ''
+                className={`inline-flex items-center rounded-md px-3 py-1.5 text-xs font-medium border hover:bg-accent cursor-pointer ${task.completed ? 'opacity-70' : ''
                   }`}
               >
                 {task.completed ? 'Desfazer' : 'Concluir'}
@@ -186,11 +188,20 @@ function Home() {
               <button
                 onClick={(e) => {
                   e.stopPropagation()
+                  openEdit(task)
+                }}
+                className="inline-flex items-center rounded-md px-3 py-1.5 text-xs font-medium border text-primary hover:bg-primary/10 cursor-pointer"
+              >
+                <PencilIcon className="w-4 h-4" />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
                   handleDeleteTask(task.id)
                 }}
-                className="inline-flex items-center rounded-md px-3 py-1.5 text-xs font-medium border text-destructive hover:bg-destructive/10"
+                className="inline-flex items-center rounded-md px-3 py-1.5 text-xs font-medium border text-destructive hover:bg-destructive/10 cursor-pointer"
               >
-                Excluir
+                <TrashIcon className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -198,7 +209,7 @@ function Home() {
 
         {displayTasks.length === 0 && (
           <div className="col-span-full text-center text-sm text-muted-foreground py-10 border rounded-lg">
-            {searchResults ? 'Nenhum resultado encontrado.' : 'Nenhuma task adicionada ainda.'}
+            {searchResults ? 'Nenhum resultado encontrado.' : 'Nenhuma tarefa adicionada ainda.'}
           </div>
         )}
       </div>
@@ -206,7 +217,7 @@ function Home() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Detalhes da Task</DialogTitle>
+            <DialogTitle>Detalhes da Tarefa</DialogTitle>
             <DialogDescription>Veja e edite as informações da tarefa.</DialogDescription>
           </DialogHeader>
           {editing && (
@@ -227,7 +238,7 @@ function Home() {
           onClick={loadMore}
           className="inline-flex items-center rounded-md border px-3 py-2 text-sm hover:bg-accent disabled:opacity-50"
         >
-          {hasMore ? 'Carregar mais' : 'Não há mais tasks'}
+          {hasMore ? 'Carregar mais' : 'Não há mais tarefas'}
         </button>
       </div>
     </div>

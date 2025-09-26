@@ -40,10 +40,10 @@ export function useTasks() {
         setHasMore(items.length > 0)
       } else {
         const responseData = result.error.response?.data as unknown as { message?: string } | undefined
-        setFeedback({ type: 'error', text: responseData?.message || 'Falha ao carregar tasks.' })
+        setFeedback({ type: 'error', text: responseData?.message || 'Falha ao carregar tarefas.' })
       }
     } catch (err) {
-      setFeedback({ type: 'error', text: 'Erro inesperado ao carregar tasks.' })
+      setFeedback({ type: 'error', text: 'Erro inesperado ao carregar tarefas.' })
     } finally {
       setLoading(false)
     }
@@ -75,15 +75,15 @@ export function useTasks() {
       if (result.ok) {
         const created = result.data.task
         appendTaskToList(created)
-        setFeedback({ type: 'success', text: 'Task criada com sucesso.' })
+        setFeedback({ type: 'success', text: 'Tarefa criada com sucesso.' })
         return { success: true }
       } else {
         const responseData = result.error.response?.data as unknown as { message?: string } | undefined
-        setFeedback({ type: 'error', text: responseData?.message || 'Falha ao criar a task.' })
+        setFeedback({ type: 'error', text: responseData?.message || 'Falha ao criar a tarefa.' })
         return { success: false }
       }
     } catch (err) {
-      setFeedback({ type: 'error', text: 'Erro inesperado ao criar a task.' })
+      setFeedback({ type: 'error', text: 'Erro inesperado ao criar a tarefa.' })
       return { success: false }
     } finally {
       setLoading(false)
@@ -112,15 +112,15 @@ export function useTasks() {
               : t
           )
         )
-        setFeedback({ type: 'success', text: 'Task atualizada com sucesso.' })
+        setFeedback({ type: 'success', text: 'Tarefa atualizada com sucesso.' })
         return { success: true }
       } else {
         const responseData = result.error.response?.data as unknown as { message?: string } | undefined
-        setFeedback({ type: 'error', text: responseData?.message || 'Falha ao atualizar a task.' })
+        setFeedback({ type: 'error', text: responseData?.message || 'Falha ao atualizar a tarefa.' })
         return { success: false }
       }
     } catch (err) {
-      setFeedback({ type: 'error', text: 'Erro inesperado ao atualizar a task.' })
+      setFeedback({ type: 'error', text: 'Erro inesperado ao atualizar a tarefa.' })
       return { success: false }
     } finally {
       setLoading(false)
@@ -136,13 +136,13 @@ export function useTasks() {
         // rollback on failure
         setTasks(current)
         const responseData = result.error.response?.data as unknown as { message?: string } | undefined
-        setFeedback({ type: 'error', text: responseData?.message || 'Falha ao excluir a task.' })
+        setFeedback({ type: 'error', text: responseData?.message || 'Falha ao excluir a tarefa.' })
         return { success: false }
       }
       return { success: true }
     } catch (err) {
       setTasks(current)
-      setFeedback({ type: 'error', text: 'Erro inesperado ao excluir a task.' })
+      setFeedback({ type: 'error', text: 'Erro inesperado ao excluir a tarefa.' })
       return { success: false }
     }
   }, [tasks])
@@ -169,6 +169,7 @@ export function useTasks() {
     addTask,
     updateTask,
     deleteTask,
-    loadMore
+    loadMore,
+    appendTaskToList
   }
 }

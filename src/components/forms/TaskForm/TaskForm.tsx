@@ -168,7 +168,7 @@ export function TaskForm({
           disabled={submitting}
           className="w-full"
         >
-          {submitting ? 'Adicionando...' : 'Adicionar Task'}
+          {submitting ? 'Adicionando...' : 'Adicionar tarefa'}
         </Button>
       </div>
     </form>
