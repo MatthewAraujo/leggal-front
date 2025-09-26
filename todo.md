@@ -1,4 +1,4 @@
 [X] - editar task
 [X] - tela da task para ver todos os detalhes
-[] - busca por rag para saber quais tasks mais se parecem
-[] - colocar a cor da empresa
+[x]- busca por rag para saber quais tasks mais se parecem
+[X] - colocar a cor da empresa
