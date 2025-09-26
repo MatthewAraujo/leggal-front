@@ -26,16 +26,6 @@ function Login() {
   const { signIn } = useSession()
   const navigate = useNavigate()
 
-  const users = [
-    { name: 'Admin', email: 'admin@site.com', password: 'password@123' },
-    { name: 'Client', email: 'client@site.com', password: 'password@123' }
-  ]
-
-  function handleUserChange(event: React.ChangeEvent<HTMLSelectElement>) {
-    const user = event.target.value
-    setValues(JSON.parse(user))
-  }
-
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target
 

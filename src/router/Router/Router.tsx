@@ -5,6 +5,7 @@ import { PrivateRoute, } from '../PrivateRoute'
 import { PublicRoute } from '../PublicRoute'
 import { Users } from 'lucide-react'
 import path from 'path'
+import { NotFound } from '@/pages/NotFound'
 
 function Router() {
   const {
@@ -44,7 +45,7 @@ function Router() {
       <Route path={REGISTER_PATH} element={<Register />} />
       <Route path="/signup" element={<Register />} />
 
-      <Route path="*" element={<h1>404</h1>} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   )
 }
